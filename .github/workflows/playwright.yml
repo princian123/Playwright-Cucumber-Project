@@ -23,13 +23,16 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
+    - name: Install system dependencies
+      run: sudo apt-get update && sudo apt-get install -y xvfb libxkbcommon-x11-0
+    
     - name: Install Playwright browsers
       run: npx playwright install --with-deps
     
     - name: Run Cucumber tests
-      run: npm run test
+      run: xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" npm run test
       env:
-        BASEURL: ${{ secrets.BASEURL }}
+        BASEURL: ${{ secrets.BASEURL || 'http://localhost:3000' }}
         ENV: prod
         BROWSER: chrome
         HEAD: false
